@@ -1,16 +1,1 @@
-# kalendari
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Ботнарь Игнат и Саидов Фраймон Приложение помогает школьникам и студентам удобно планировать учебу. Календарь объединяет уроки, пары, дедлайны и экзамены. Напоминания не дают забыть о заданиях. Есть цветовые категории, заметки и синхронизация между устройствами. Простой интерфейс экономит время, снижает стресс и помогает сохранять баланс между учебой и личной жизнью каждый день. Приложение подходит для школ и вузов, поддерживает расписания и совместную работу в группах онлайн https://www.figma.com/make/2fGCLS5wBtRIlczCSNYEL0/TaskFlow?t=hjxtnB2zVfX0r8J1-1
