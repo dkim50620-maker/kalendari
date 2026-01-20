@@ -4,170 +4,125 @@ void main() {
   runApp(const TaskFlowApp());
 }
 
-class TaskFlowApp extends StatefulWidget {
+/* ===================== APP ===================== */
+
+class TaskFlowApp extends StatelessWidget {
   const TaskFlowApp({super.key});
-
-  @override
-  State<TaskFlowApp> createState() => _TaskFlowAppState();
-}
-
-class _TaskFlowAppState extends State<TaskFlowApp> {
-  int index = 0;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'TaskFlow',
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF5F6FA),
-        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: const Color(0xFFF6F4FB),
+        useMaterial3: true,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('TaskFlow'),
-          centerTitle: true,
-        ),
-        body: index == 0 ? const ScheduleScreen() : const TeachersScreen(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: const Icon(Icons.add),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: index,
-          onTap: (i) => setState(() => index = i),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today),
-              label: 'Schedule',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: 'Teachers',
-            ),
-          ],
-        ),
-      ),
+      home: const ScheduleScreen(),
     );
   }
 }
 
-/* ===================== SCHEDULE ===================== */
+/* ===================== MODEL ===================== */
 
-class ScheduleScreen extends StatelessWidget {
+class ClassData {
+  final String teacher;
+  final String student;
+  final String day;
+  final String start;
+  final String end;
+
+  ClassData({
+    required this.teacher,
+    required this.student,
+    required this.day,
+    required this.start,
+    required this.end,
+  });
+}
+
+/* ===================== SCHEDULE SCREEN ===================== */
+
+class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: const [
-        DayBlock(day: 'Sunday', classes: []),
-        DayBlock(
-          day: 'Monday',
-          classes: [
-            ClassItem(
-              teacher: 'Mr. Shvetkov',
-              student: 'Ali Hassan',
-              subject: 'Mathematics - Algebra review',
-              time: '10:00 - 11:00',
-              color: Colors.blue,
-            ),
-            ClassItem(
-              teacher: 'Ms. Kyzembaeva',
-              student: 'Amira Khalil',
-              subject: 'English - Literature discussion',
-              time: '14:00 - 15:00',
-              color: Colors.green,
-            ),
-          ],
-        ),
-        DayBlock(
-          day: 'Tuesday',
-          classes: [
-            ClassItem(
-              teacher: 'Dr. Arafat',
-              student: 'Mohamed Ali',
-              subject: 'Physics - Mechanics',
-              time: '09:00 - 10:00',
-              color: Colors.purple,
-            ),
-          ],
-        ),
-        DayBlock(
-          day: 'Wednesday',
-          classes: [
-            ClassItem(
-              teacher: 'Mr. Shvetkov',
-              student: 'Layla Ahmed',
-              subject: 'Mathematics - Calculus',
-              time: '11:00 - 12:00',
-              color: Colors.blue,
-            ),
-          ],
-        ),
-        DayBlock(
-          day: 'Thursday',
-          classes: [
-            ClassItem(
-              teacher: 'Ms. Aiman',
-              student: 'Yusuf Hassan',
-              subject: 'Chemistry - Organic compounds',
-              time: '16:00 - 17:00',
-              color: Colors.orange,
-            ),
-          ],
-        ),
-        DayBlock(day: 'Friday', classes: []),
-        DayBlock(day: 'Saturday', classes: []),
-      ],
-    );
-  }
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
-class DayBlock extends StatelessWidget {
-  final String day;
-  final List<ClassItem> classes;
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  final Map<String, List<ClassData>> schedule = {
+    'Sunday': [],
+    'Monday': [],
+    'Tuesday': [],
+    'Wednesday': [],
+    'Thursday': [],
+    'Friday': [],
+    'Saturday': [],
+  };
 
-  const DayBlock({super.key, required this.day, required this.classes});
+  void addClass(ClassData data) {
+    setState(() {
+      schedule[data.day]!.add(data);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('TaskFlow'),
+        centerTitle: true,
+      ),
+      body: ListView(
         padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(day, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            if (classes.isEmpty)
-              const Text('No classes scheduled',
-                  style: TextStyle(color: Colors.grey)),
-            ...classes,
-          ],
-        ),
+        children: schedule.entries.map((entry) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3EFFB),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(entry.key,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 6),
+                if (entry.value.isEmpty)
+                  const Text(
+                    'No classes scheduled',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ...entry.value.map((c) => ClassItem(data: c)),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+
+      /// ✅ FAB ВНУТРИ ScheduleScreen
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFFE6DFFF),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (_) => AddAppointmentDialog(onAdd: addClass),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-class ClassItem extends StatelessWidget {
-  final String teacher;
-  final String student;
-  final String subject;
-  final String time;
-  final Color color;
+/* ===================== CLASS ITEM ===================== */
 
-  const ClassItem({
-    super.key,
-    required this.teacher,
-    required this.student,
-    required this.subject,
-    required this.time,
-    required this.color,
-  });
+class ClassItem extends StatelessWidget {
+  final ClassData data;
+
+  const ClassItem({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -176,20 +131,17 @@ class ClassItem extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border(left: BorderSide(color: color, width: 4)),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(teacher,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: color)),
-          Text(student),
-          Text(subject),
+          Text(data.teacher,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(data.student),
           Align(
             alignment: Alignment.centerRight,
-            child: Text(time,
+            child: Text('${data.start} - ${data.end}',
                 style: const TextStyle(color: Colors.grey)),
           ),
         ],
@@ -198,102 +150,152 @@ class ClassItem extends StatelessWidget {
   }
 }
 
-/* ===================== TEACHERS ===================== */
+/* ===================== ADD DIALOG ===================== */
 
-class TeachersScreen extends StatelessWidget {
-  const TeachersScreen({super.key});
+class AddAppointmentDialog extends StatefulWidget {
+  final Function(ClassData) onAdd;
+
+  const AddAppointmentDialog({super.key, required this.onAdd});
 
   @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: const [
-        TeacherItem(
-          name: 'Mr. Shvetkov',
-          status: 'Available',
-          color: Colors.green,
-          classes: [
-            'Ali Hassan — Mon 10:00',
-            'Layla Ahmed — Wed 11:00'
-          ],
-        ),
-        TeacherItem(
-          name: 'Ms. Kyzembaeva',
-          status: 'Busy',
-          color: Colors.red,
-          classes: ['Amira Khalil — Mon 14:00'],
-        ),
-        TeacherItem(
-          name: 'Dr. Arafat',
-          status: 'Partially Available',
-          color: Colors.orange,
-          classes: ['Mohamed Ali — Tue 09:00'],
-        ),
-        TeacherItem(
-          name: 'Ms. Aiman',
-          status: 'Available',
-          color: Colors.green,
-          classes: ['Yusuf Hassan — Thu 16:00'],
-        ),
-        TeacherItem(
-          name: 'Mr. Madi',
-          status: 'Busy',
-          color: Colors.red,
-          classes: [],
-        ),
-      ],
-    );
-  }
+  State<AddAppointmentDialog> createState() => _AddAppointmentDialogState();
 }
 
-class TeacherItem extends StatelessWidget {
-  final String name;
-  final String status;
-  final Color color;
-  final List<String> classes;
+class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
+  String? teacher;
+  String? day;
+  String? start;
+  String? end;
 
-  const TeacherItem({
-    super.key,
-    required this.name,
-    required this.status,
-    required this.color,
-    required this.classes,
-  });
+  final studentCtrl = TextEditingController();
+
+  final teachers = [
+    'Mr. Shvetkov',
+    'Ms. Kyzembaeva',
+    'Dr. Arafat',
+    'Ms. Aiman',
+  ];
+
+  final days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+
+  final times = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00'];
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text('+ Add New Appointment',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+
+            _label('Teacher *'),
+            _dropdown(teacher, teachers, (v) => setState(() => teacher = v)),
+
+            _label('Student Name *'),
+            _input(studentCtrl),
+
+            _label('Day *'),
+            _dropdown(day, days, (v) => setState(() => day = v)),
+
             Row(
               children: [
-                CircleAvatar(
-                  backgroundColor: color,
-                  child: Text(name[0]),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(name,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold)),
-                    Text(status,
-                        style: TextStyle(color: color)),
-                  ],
-                ),
+                Expanded(
+                    child: _dropdown(start, times,
+                            (v) => setState(() => start = v))),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _dropdown(end, times,
+                            (v) => setState(() => end = v))),
               ],
             ),
-            const SizedBox(height: 10),
-            if (classes.isEmpty)
-              const Text('No upcoming classes',
-                  style: TextStyle(color: Colors.grey)),
-            ...classes.map((c) => Text('• $c')),
+
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (teacher != null &&
+                          day != null &&
+                          start != null &&
+                          end != null &&
+                          studentCtrl.text.isNotEmpty) {
+                        widget.onAdd(
+                          ClassData(
+                            teacher: teacher!,
+                            student: studentCtrl.text,
+                            day: day!,
+                            start: start!,
+                            end: end!,
+                          ),
+                        );
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text('Add Appointment'),
+                  ),
+                ),
+              ],
+            )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(top: 10, bottom: 4),
+    child:
+    Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+  );
+
+  Widget _input(TextEditingController c) => TextField(
+    controller: c,
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: const Color(0xFFF1F1F1),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+    ),
+  );
+
+  Widget _dropdown(String? value, List<String> items,
+      ValueChanged<String?> onChanged) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      hint: const Text('Select'),
+      onChanged: onChanged,
+      items: items
+          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+          .toList(),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: const Color(0xFFF1F1F1),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
         ),
       ),
     );
