@@ -19,7 +19,6 @@ class TeachersScreen extends StatefulWidget {
 class _TeachersScreenState extends State<TeachersScreen> {
   @override
   Widget build(BuildContext context) {
-    // Grouping classes by teacher
     final Map<String, List<ClassData>> teachersMap = {};
     for (var data in widget.allClassData) {
       teachersMap.putIfAbsent(data.teacher, () => []).add(data);
@@ -53,7 +52,7 @@ class _TeachersScreenState extends State<TeachersScreen> {
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'Search teachers...',
+                    hintText: 'Поиск учителей...',
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                     border: InputBorder.none,
                     isCollapsed: true,
@@ -94,11 +93,11 @@ class _TeachersScreenState extends State<TeachersScreen> {
   }
 
   String _getStatus(String name) {
-    if (name.contains('Shvetkov')) return 'Available';
-    if (name.contains('Kyzembaeva')) return 'Busy';
-    if (name.contains('Arafat')) return 'Partially Available';
-    if (name.contains('Aiman')) return 'Available';
-    return 'Busy';
+    if (name.contains('Shvetkov')) return 'Доступен';
+    if (name.contains('Kyzembaeva')) return 'Занят';
+    if (name.contains('Arafat')) return 'Частично доступен';
+    if (name.contains('Aiman')) return 'Доступен';
+    return 'Занят';
   }
 
   Color _getTeacherColor(int index) {
@@ -173,7 +172,7 @@ class _TeacherCard extends StatelessWidget {
                       '${classes.length}',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
-                    const Text('Classes', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                    const Text('Занятий', style: TextStyle(fontSize: 10, color: Colors.grey)),
                   ],
                 ),
               ],
@@ -198,7 +197,7 @@ class _TeacherCard extends StatelessWidget {
                     const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                     const SizedBox(width: 6),
                     const Text(
-                      'Upcoming Classes',
+                      'Предстоящие занятия',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
                     ),
                   ],
@@ -208,7 +207,7 @@ class _TeacherCard extends StatelessWidget {
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 4.0),
                     child: Center(
-                      child: Text('No upcoming classes', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      child: Text('Нет запланированных занятий', style: TextStyle(fontSize: 12, color: Colors.grey)),
                     ),
                   )
                 else
@@ -218,7 +217,7 @@ class _TeacherCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(c.student, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                        Text('${c.day} | ${c.start}-${c.end}', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+                        Text('${_translateDay(c.day)} | ${c.start}-${c.end}', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
                       ],
                     ),
                   )),
@@ -230,36 +229,41 @@ class _TeacherCard extends StatelessWidget {
     );
   }
 
+  String _translateDay(String day) {
+    final map = {
+      'Monday': 'Пн',
+      'Tuesday': 'Вт',
+      'Wednesday': 'Ср',
+      'Thursday': 'Чт',
+      'Friday': 'Пт',
+      'Saturday': 'Сб',
+      'Sunday': 'Вс',
+    };
+    return map[day] ?? day;
+  }
+
   String _getInitials(String name) {
     try {
       List<String> parts = name.split(' ');
       if (parts.length >= 2) {
         String first = parts[0];
         String second = parts[1];
-        
         String firstChar = "";
         if (first.contains('.')) {
           int dotIndex = first.indexOf('.');
           if (dotIndex + 1 < first.length) {
             firstChar = first[dotIndex + 1];
-          } else {
-             firstChar = first[0];
-          }
-        } else {
-          firstChar = first[0];
-        }
-        
+          } else { firstChar = first[0]; }
+        } else { firstChar = first[0]; }
         return (firstChar + second[0]).toUpperCase();
       }
       return name.substring(0, 1).toUpperCase();
-    } catch (e) {
-      return "??";
-    }
+    } catch (e) { return "??"; }
   }
 
   Color _getStatusColor(String status) {
-    if (status == 'Available') return Colors.green;
-    if (status == 'Busy') return Colors.red;
+    if (status == 'Доступен') return Colors.green;
+    if (status == 'Занят') return Colors.red;
     return Colors.orange;
   }
 }

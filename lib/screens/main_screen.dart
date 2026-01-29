@@ -36,7 +36,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Список страниц для навигации
     final List<Widget> _pages = [
       ScheduleScreen(schedule: _schedule, onAddClass: _addClass),
       TeachersScreen(
@@ -66,17 +65,17 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today_outlined),
               activeIcon: Icon(Icons.calendar_today),
-              label: 'Schedule',
+              label: 'Расписание',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.people_outline),
               activeIcon: Icon(Icons.people),
-              label: 'Teachers',
+              label: 'Учителя',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.rate_review_outlined),
               activeIcon: Icon(Icons.rate_review),
-              label: 'Reviews',
+              label: 'Отзывы',
             ),
           ],
           selectedItemColor: Colors.blueAccent,
