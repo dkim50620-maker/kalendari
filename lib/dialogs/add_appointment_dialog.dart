@@ -3,8 +3,13 @@ import '../models/class_data.dart';
 
 class AddAppointmentDialog extends StatefulWidget {
   final Function(ClassData) onAdd;
+  final List<String> teachers;
 
-  const AddAppointmentDialog({super.key, required this.onAdd});
+  const AddAppointmentDialog({
+    super.key, 
+    required this.onAdd, 
+    required this.teachers,
+  });
 
   @override
   State<AddAppointmentDialog> createState() =>
@@ -19,13 +24,6 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
 
   final studentCtrl = TextEditingController();
 
-  final teachers = [
-    'Mr. Shvetkov',
-    'Ms. Kyzembaeva',
-    'Dr. Arafat',
-    'Ms. Aiman',
-  ];
-
   final days = [
     'Sunday',
     'Monday',
@@ -36,7 +34,7 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
     'Saturday',
   ];
 
-  final times = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00'];
+  final times = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
 
   @override
   Widget build(BuildContext context) {
@@ -46,74 +44,91 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '+ Add New Appointment',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            _label('Teacher *'),
-            _dropdown(teacher, teachers, (v) => setState(() => teacher = v)),
-
-            _label('Student Name *'),
-            _input(studentCtrl),
-
-            _label('Day *'),
-            _dropdown(day, days, (v) => setState(() => day = v)),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _dropdown(start, times,
-                          (v) => setState(() => start = v)),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _dropdown(end, times,
-                          (v) => setState(() => end = v)),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '+ Добавить занятие',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+    
+              _label('Учитель *'),
+              _dropdown(teacher, widget.teachers, (v) => setState(() => teacher = v)),
+    
+              _label('Имя ученика *'),
+              _input(studentCtrl),
+    
+              _label('День *'),
+              _dropdown(day, days, (v) => setState(() => day = v)),
+    
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Начало', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                        _dropdown(start, times, (v) => setState(() => start = v)),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (teacher != null &&
-                          day != null &&
-                          start != null &&
-                          end != null &&
-                          studentCtrl.text.isNotEmpty) {
-                        widget.onAdd(
-                          ClassData(
-                            teacher: teacher!,
-                            student: studentCtrl.text,
-                            day: day!,
-                            start: start!,
-                            end: end!,
-                          ),
-                        );
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: const Text('Add Appointment'),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Конец', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                        _dropdown(end, times, (v) => setState(() => end = v)),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+    
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Отмена'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (teacher != null &&
+                            day != null &&
+                            start != null &&
+                            end != null &&
+                            studentCtrl.text.isNotEmpty) {
+                          widget.onAdd(
+                            ClassData(
+                              teacher: teacher!,
+                              student: studentCtrl.text,
+                              day: day!,
+                              start: start!,
+                              end: end!,
+                            ),
+                          );
+                          Navigator.pop(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Добавить'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -132,6 +147,7 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
     decoration: InputDecoration(
       filled: true,
       fillColor: const Color(0xFFF1F1F1),
+      hintText: 'Имя ученика',
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide.none,
@@ -146,7 +162,7 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
       ) {
     return DropdownButtonFormField<String>(
       value: value,
-      hint: const Text('Select'),
+      hint: const Text('Выбрать'),
       onChanged: onChanged,
       items: items
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -154,6 +170,7 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
       decoration: InputDecoration(
         filled: true,
         fillColor: const Color(0xFFF1F1F1),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,

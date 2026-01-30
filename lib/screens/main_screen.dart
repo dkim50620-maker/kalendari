@@ -14,6 +14,14 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
+  final List<String> _teacherNames = [
+    'Mr. Shvetkov',
+    'Ms. Kyzembaeva',
+    'Dr. Arafat',
+    'Ms. Aiman',
+    'Mr. Madi',
+  ];
+
   final Map<String, List<ClassData>> _schedule = {
     'Sunday': [],
     'Monday': [],
@@ -30,6 +38,14 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _addTeacher(String name) {
+    setState(() {
+      if (!_teacherNames.contains(name)) {
+        _teacherNames.add(name);
+      }
+    });
+  }
+
   List<ClassData> get _allClasses {
     return _schedule.values.expand((element) => element).toList();
   }
@@ -37,10 +53,15 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
-      ScheduleScreen(schedule: _schedule, onAddClass: _addClass),
+      ScheduleScreen(
+        schedule: _schedule, 
+        onAddClass: _addClass,
+        teachers: _teacherNames,
+      ),
       TeachersScreen(
         allClassData: _allClasses,
-        onAddClass: _addClass,
+        teacherNames: _teacherNames,
+        onAddTeacher: _addTeacher,
       ),
       const ReviewsScreen(),
     ];

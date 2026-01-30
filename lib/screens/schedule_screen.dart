@@ -6,11 +6,13 @@ import '../dialogs/add_appointment_dialog.dart';
 class ScheduleScreen extends StatelessWidget {
   final Map<String, List<ClassData>> schedule;
   final Function(ClassData) onAddClass;
+  final List<String> teachers;
 
   const ScheduleScreen({
     super.key,
     required this.schedule,
     required this.onAddClass,
+    required this.teachers,
   });
 
   @override
@@ -43,7 +45,7 @@ class ScheduleScreen extends StatelessWidget {
                 const SizedBox(height: 6),
                 if (entry.value.isEmpty)
                   const Text(
-                    'No classes scheduled',
+                    'Нет запланированных занятий',
                     style: TextStyle(color: Colors.grey),
                   ),
                 ...entry.value.map((c) => ClassItem(data: c)),
@@ -57,7 +59,10 @@ class ScheduleScreen extends StatelessWidget {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (_) => AddAppointmentDialog(onAdd: onAddClass),
+            builder: (_) => AddAppointmentDialog(
+              onAdd: onAddClass,
+              teachers: teachers,
+            ),
           );
         },
         child: const Icon(Icons.add),

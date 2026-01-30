@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import '../models/class_data.dart';
-import '../dialogs/add_appointment_dialog.dart';
+import '../dialogs/add_teacher_dialog.dart';
 
 class TeachersScreen extends StatefulWidget {
   final List<ClassData> allClassData;
-  final Function(ClassData) onAddClass;
+  final List<String> teacherNames;
+  final Function(String) onAddTeacher;
 
   const TeachersScreen({
     super.key,
     required this.allClassData,
-    required this.onAddClass,
+    required this.teacherNames,
+    required this.onAddTeacher,
   });
 
   @override
@@ -23,14 +25,6 @@ class _TeachersScreenState extends State<TeachersScreen> {
     for (var data in widget.allClassData) {
       teachersMap.putIfAbsent(data.teacher, () => []).add(data);
     }
-
-    final teacherNames = [
-      'Mr. Shvetkov',
-      'Ms. Kyzembaeva',
-      'Dr. Arafat',
-      'Ms. Aiman',
-      'Mr. Madi',
-    ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F4FB),
@@ -65,9 +59,9 @@ class _TeachersScreenState extends State<TeachersScreen> {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: teacherNames.length,
+        itemCount: widget.teacherNames.length,
         itemBuilder: (context, index) {
-          final teacher = teacherNames[index];
+          final teacher = widget.teacherNames[index];
           final classes = teachersMap[teacher] ?? [];
           
           return _TeacherCard(
@@ -84,7 +78,7 @@ class _TeachersScreenState extends State<TeachersScreen> {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (_) => AddAppointmentDialog(onAdd: widget.onAddClass),
+            builder: (_) => AddTeacherDialog(onAdd: widget.onAddTeacher),
           );
         },
         child: const Icon(Icons.add, color: Colors.white),
