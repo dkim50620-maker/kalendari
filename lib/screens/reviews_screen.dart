@@ -24,7 +24,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://formspree.io/f/xnjvvpjz'),
+        Uri.parse('https://formspree.io/f/maqjdnap'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -36,22 +36,26 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       );
 
       if (response.statusCode == 200) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Feedback sent successfully!'), backgroundColor: Colors.green),
+          const SnackBar(content: Text('Отзыв успешно отправлен!'), backgroundColor: Colors.green),
         );
         _emailController.clear();
         _messageController.clear();
       } else {
-        throw Exception('Failed to send feedback');
+        throw Exception('Ошибка при отправке');
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error sending feedback. Please try again.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Ошибка отправки. Попробуйте еще раз.'), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -60,7 +64,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F4FB),
       appBar: AppBar(
-        title: const Text('Reviews & Feedback'),
+        title: const Text('Отзывы и Обратная связь'),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -73,12 +77,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'We value your feedback!',
+                'Нам важно ваше мнение!',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               const Text(
-                'Please fill out the form below to share your thoughts with us.',
+                'Пожалуйста, заполните форму ниже, чтобы поделиться своими мыслями.',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 30),
@@ -98,19 +102,19 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty || !value.contains('@')) {
-                    return 'Please enter a valid email';
+                    return 'Введите корректный email';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-              const Text('Message', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Сообщение', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _messageController,
                 maxLines: 5,
                 decoration: InputDecoration(
-                  hintText: 'Tell us what you think...',
+                  hintText: 'Напишите, что вы думаете...',
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -120,7 +124,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a message';
+                    return 'Введите сообщение';
                   }
                   return null;
                 },
@@ -140,7 +144,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Send Feedback', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      : const Text('Отправить отзыв', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
