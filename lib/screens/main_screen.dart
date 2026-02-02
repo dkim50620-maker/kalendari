@@ -90,7 +90,6 @@ class _MainScreenState extends State<MainScreen> {
         teacherNames: _teacherNames,
         onAddTeacher: _addTeacher,
       ),
-      const ReviewsScreen(),
       ProfileScreen(
         login: _currentUser,
         teachersCount: _teacherNames.length,
@@ -125,11 +124,6 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.people_outline),
               activeIcon: Icon(Icons.people),
               label: 'Teachers',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.rate_review_outlined),
-              activeIcon: Icon(Icons.rate_review),
-              label: 'Reviews',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle_outlined),
