@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'screens/main_screen.dart';
 
 class TaskFlowApp extends StatelessWidget {
-  const TaskFlowApp({super.key});
+  final Widget startScreen;
+  
+  const TaskFlowApp({super.key, required this.startScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,7 @@ class TaskFlowApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF6F4FB),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: startScreen,
     );
   }
 }

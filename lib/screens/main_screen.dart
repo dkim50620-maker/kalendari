@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'schedule_screen.dart';
 import 'teachers_screen.dart';
 import 'reviews_screen.dart';
+import 'profile_screen.dart';
+import 'login_screen.dart';
 import '../models/class_data.dart';
+import '../services/auth_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -13,6 +16,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  final _authService = AuthService();
+  String _currentUser = 'админ';
 
   final List<String> _teacherNames = [
     'Mr. Shvetkov',
@@ -32,6 +37,19 @@ class _MainScreenState extends State<MainScreen> {
     'Saturday': [],
   };
 
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  void _loadUser() async {
+    String? user = await _authService.getCurrentUser();
+    if (user != null) {
+      setState(() => _currentUser = user);
+    }
+  }
+
   void _addClass(ClassData data) {
     setState(() {
       _schedule[data.day]!.add(data);
@@ -50,6 +68,15 @@ class _MainScreenState extends State<MainScreen> {
     return _schedule.values.expand((element) => element).toList();
   }
 
+  void _logout() async {
+    await _authService.logout();
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
@@ -64,6 +91,12 @@ class _MainScreenState extends State<MainScreen> {
         onAddTeacher: _addTeacher,
       ),
       const ReviewsScreen(),
+      ProfileScreen(
+        login: _currentUser,
+        teachersCount: _teacherNames.length,
+        classesCount: _allClasses.length,
+        onLogout: _logout,
+      ),
     ];
 
     return Scaffold(
@@ -86,17 +119,22 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today_outlined),
               activeIcon: Icon(Icons.calendar_today),
-              label: 'Расписание',
+              label: 'Schedule',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.people_outline),
               activeIcon: Icon(Icons.people),
-              label: 'Учителя',
+              label: 'Teachers',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.rate_review_outlined),
               activeIcon: Icon(Icons.rate_review),
-              label: 'Отзывы',
+              label: 'Reviews',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle_outlined),
+              activeIcon: Icon(Icons.account_circle),
+              label: 'Profile',
             ),
           ],
           selectedItemColor: Colors.blueAccent,
