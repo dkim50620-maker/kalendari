@@ -6,6 +6,7 @@ import 'profile_screen.dart';
 import 'login_screen.dart';
 import '../models/class_data.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -41,6 +42,12 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _loadUser();
+    _initNotifications();
+  }
+
+  void _initNotifications() async {
+    // Запрашиваем разрешение на уведомления при первом входе
+    await NotificationService.requestPermissions();
   }
 
   void _loadUser() async {
@@ -54,6 +61,12 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _schedule[data.day]!.add(data);
     });
+    // Показываем уведомление при добавлении занятия
+    NotificationService.showNotification(
+      id: DateTime.now().millisecond,
+      title: 'Новое занятие добавлено',
+      body: 'Преподаватель: ${data.teacher}, Студент: ${data.student}',
+    );
   }
 
   void _addTeacher(String name) {
@@ -62,6 +75,12 @@ class _MainScreenState extends State<MainScreen> {
         _teacherNames.add(name);
       }
     });
+    // Показываем уведомление при добавлении учителя
+    NotificationService.showNotification(
+      id: DateTime.now().millisecond + 1,
+      title: 'Новый преподаватель',
+      body: 'Преподаватель $name добавлен в список',
+    );
   }
 
   List<ClassData> get _allClasses {
@@ -90,6 +109,7 @@ class _MainScreenState extends State<MainScreen> {
         teacherNames: _teacherNames,
         onAddTeacher: _addTeacher,
       ),
+      const ReviewsScreen(),
       ProfileScreen(
         login: _currentUser,
         teachersCount: _teacherNames.length,
@@ -124,6 +144,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.people_outline),
               activeIcon: Icon(Icons.people),
               label: 'Teachers',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.rate_review_outlined),
+              activeIcon: Icon(Icons.rate_review),
+              label: 'Reviews',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle_outlined),
